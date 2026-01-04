@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>OTT AI Personalisation & Churn Intelligence</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+
+body{
+    background:#050b1f;
+    color:white;
+    font-family:'Segoe UI',Tahoma,Arial;
+}
+
+.title{
+    font-size:34px;
+    font-weight:bold;
+}
+
+.card{
+    background:#0d1738;
+    border-radius:18px;
+    border:1px solid rgba(255,255,255,0.2);
+    box-shadow:0px 0px 18px rgba(0,0,0,0.7);
+    padding:10px;
+}
+
+h2,h3,h4,h5{
+    color:#dbe6ff;
+}
+
+p,span,th,td,label{
+    color:#ffffff;
+}
+
+input{
+    background:#0b1328 !important;
+    color:#ffffff !important;
+    border:1px solid rgba(255,255,255,0.6) !important;
+    padding:10px;
+    border-radius:10px;
+    margin-bottom:8px;
+    font-size:16px;
+}
+
+input::placeholder{
+    color:#9fb3ff !important;
+}
+
+input:focus{
+    outline:none;
+    border:2px solid #5588ff !important;
+    background:#0d1b3f !important;
+}
+
+.btn-primary{
+    background:#446dff;
+    border:none;
+    padding:10px;
+    border-radius:10px;
+    font-weight:bold;
+}
+
+.btn-outline-light{
+    border-radius:8px;
+    color:white;
+    border:1px solid white;
+}
+
+.table{
+    background:#0f1f4b !important;
+    color:#ffffff !important;
+}
+
+.table thead tr{
+    background:#1b2c65 !important;
+}
+
+.table tbody tr{
+    background:#142554 !important;
+}
+
+canvas{
+    background:#0b1328;
+    border-radius:10px;
+    padding:5px;
+}
+.card{
+    background: linear-gradient(145deg,#0b1328,#0e1d4a);
+}
+
+
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+</head>
+
+<body class="p-4">
+
+<div style="
+background:#0b1328;
+padding:14px;
+border-bottom:1px solid rgba(255,255,255,0.2);
+display:flex;
+justify-content:space-between;
+align-items:center;">
+<h3 style="margin:0;color:#9fc1ff;">🎥 OTT AI Admin Console</h3>
+<span style="opacity:0.8;">Powered by AI Intelligence Engine</span>
+</div>
+
+<h2 class="title mb-4">🎥 OTT AI Personalisation & Churn Intelligence Platform</h2>
+<p style="opacity:0.8">
+AI platform predicting churn, purchase intent & recommending real-time retention strategies
+</p>
+
+<div class="row">
+
+<!---------------- LEFT SIDE ---------------->
+<div class="col-md-6">
+
+<div class="card p-3 mb-3">
+<h4>📌 Sample OTT Users</h4>
+<button class="btn btn-outline-light m-1" onclick="fillUser(35,8,0,22,1,50,1,4)">User A</button>
+<button class="btn btn-outline-light m-1" onclick="fillUser(5,1,5,30,10,10,0,1)">User B</button>
+<button class="btn btn-outline-light m-1" onclick="fillUser(55,12,2,25,1,95,1,5)">User C</button>
+</div>
+
+<div class="card p-3 mb-3">
+<h4>📝 Enter User Data</h4>
+
+<input id="watch_hours" class="form-control" placeholder="Watch Hours">
+<input id="last_week_watch" class="form-control" placeholder="Watched Last Week (hrs)">
+<input id="subscription_type" class="form-control" placeholder="Subscription (0 Basic / 1 Std / 2 Premium)">
+<input id="age" class="form-control" placeholder="Age">
+<input id="days_since_last_watch" class="form-control" placeholder="Days Since Last Watch">
+<input id="total_shows_watched" class="form-control" placeholder="Total Shows Watched">
+<input id="premium_interest" class="form-control" placeholder="Premium Interest (0/1)">
+<input id="feedback_rating" class="form-control" placeholder="Feedback Rating (1-5)">
+
+<button onclick="predict()" class="btn btn-primary mt-2 w-100">Predict</button>
+
+</div>
+</div>
+
+<!---------------- RIGHT SIDE ---------------->
+<div class="col-md-6">
+<div class="card p-3">
+
+<h4>📡 AI Intelligence Insights Panel</h4>
+<p style="opacity:0.7">System-generated predictions powered by machine learning</p>
+<h5>👤 User Persona</h5>
+<p><span id="persona_type" class="badge p-2 fs-6"></span></p>
+
+<h5>💰 Customer Lifetime Value (CLV)</h5>
+<p><span id="clv_value" class="badge bg-success p-2 fs-6"></span></p>
+
+<h5>💸 Estimated Revenue Risk</h5>
+<p><span id="revenue_loss" class="badge bg-danger p-2 fs-6"></span></p>
+
+<p><b>Churn Risk:</b> <span id="churn_risk"></span></p>
+<p><b>Churn Probability:</b> <span id="churn_prob"></span></p>
+<p><b>Purchase Likelihood:</b> <span id="purchase_prob"></span></p>
+
+<p><b>Risk Level:</b> <span id="risk_badge" class="badge bg-danger p-2 fs-6"></span></p>
+<p><b>Engagement Score:</b> <span id="engagement_score" class="badge bg-info p-2 fs-6"></span></p>
+<p><b>🔐 Retention Priority:</b> <span id="priority_tag" class="badge bg-warning p-2 fs-6"></span></p>
+
+<h5>💼 Business Impact</h5>
+<p><b>Business Impact:</b> <span id="business_impact" class="badge bg-success p-2 fs-6"></span></p>
+
+<h5 class="mt-3">🧠 AI Recommended Action</h5>
+<p id="recommendation" style="font-size:18px; font-weight:bold;"></p>
+
+<h5 class="mt-3">🧠 Why AI Decided This?</h5>
+<p id="ai_reason" style="opacity:0.9; font-size:16px;"></p>
+
+<hr>
+<button class="btn btn-success mb-2 w-100" onclick="downloadReport()">
+📥 Download AI Report (CSV)
+</button>
+
+<button class="btn btn-warning mb-2 w-100" onclick="downloadExcel()">
+📊 Download Excel Business Report (.xlsx)
+</button>
+
+<h4>📊 Analytics</h4>
+
+<canvas id="churnChart" height="150"></canvas>
+<br>
+<canvas id="purchaseChart" height="150"></canvas>
+
+<hr>
+<h4>🗂️ Prediction History</h4>
+
+<table class="table table-dark table-striped" id="historyTable">
+<thead>
+<tr>
+<th>User</th>
+<th>Churn Risk</th>
+<th>Churn Prob</th>
+<th>Purchase Prob</th>
+<th>Recommendation</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+
+</div>
+</div>
+
+</div>
+
+<!---------------- SCRIPT ---------------->
+<script>
+
+let churnChart = null;
+let purchaseChart = null;
+let reportHistory = [];
+
+// Fill Sample Users
+function fillUser(watch,lastweek,subs,age,inactivity,shows,premium,feedback){
+    document.getElementById("watch_hours").value = watch;
+    document.getElementById("last_week_watch").value = lastweek;
+    document.getElementById("subscription_type").value = subs;
+    document.getElementById("age").value = age;
+    document.getElementById("days_since_last_watch").value = inactivity;
+    document.getElementById("total_shows_watched").value = shows;
+    document.getElementById("premium_interest").value = premium;
+    document.getElementById("feedback_rating").value = feedback;
+}
+function showToast(msg){
+    let toast = document.getElementById("toast");
+    toast.innerHTML = msg;
+    toast.style.display = "block";
+    toast.style.opacity = "1";
+
+    setTimeout(()=>{ toast.style.opacity="0"; },1800);
+    setTimeout(()=>{ toast.style.display="none"; },2200);
+}
+
+
+function predict(){
+    // ---------- VALIDATION ----------
+    let inputs = [
+        "watch_hours",
+        "last_week_watch",
+        "subscription_type",
+        "age",
+        "days_since_last_watch",
+        "total_shows_watched",
+        "premium_interest",
+        "feedback_rating"
+    ];
+
+    for(let id of inputs){
+        let value = document.getElementById(id).value;
+
+        if(value === "" || value === null){
+            alert("❌ Please fill all fields before predicting!");
+            return;
+        }
+    }
+
+
+
+    // -------- READ RAW VALUES --------
+    let watch_raw = document.getElementById("watch_hours").value;
+    let lastweek_raw = document.getElementById("last_week_watch").value;
+    let subs_raw = document.getElementById("subscription_type").value;
+    let age_raw = document.getElementById("age").value;
+    let inactivity_raw = document.getElementById("days_since_last_watch").value;
+    let shows_raw = document.getElementById("total_shows_watched").value;
+    let premium_raw = document.getElementById("premium_interest").value;
+    let feedback_raw = document.getElementById("feedback_rating").value;
+
+    console.log("RAW INPUTS:", watch_raw,lastweek_raw,subs_raw,age_raw,inactivity_raw,shows_raw,premium_raw,feedback_raw);
+
+    // -------- BLOCK IF EVERYTHING EMPTY --------
+    if(
+        watch_raw === "" &&
+        lastweek_raw === "" &&
+        subs_raw === "" &&
+        age_raw === "" &&
+        inactivity_raw === "" &&
+        shows_raw === "" &&
+        premium_raw === "" &&
+        feedback_raw === ""
+    ){
+        showToast("⚠️ Please enter user data before predicting!");
+        return;
+    }
+
+    // -------- NOW CONVERT TO NUMBERS --------
+    let watch = Number(watch_raw || 0);
+    let lastweek = Number(lastweek_raw || 0);
+    let subs = Number(subs_raw || 0);
+    let age = Number(age_raw || 0);
+    let inactivity = Number(inactivity_raw || 0);
+    let shows = Number(shows_raw || 0);
+    let premium = Number(premium_raw || 0);
+    let feedback = Number(feedback_raw || 0);
+
+    console.log("NUM INPUTS:", watch,lastweek,subs,age,inactivity,shows,premium,feedback);
+
+    // -------- HARD SAFETY BLOCK --------
+    if(
+        watch === 0 &&
+        lastweek === 0 &&
+        age === 0 &&
+        inactivity === 0 &&
+        shows === 0
+    ){
+        showToast("⚠️ Please enter meaningful values, all zero input not allowed!");
+        return;
+    }
+
+
+    let data = {
+        watch_hours: watch,
+        active_days: lastweek,
+        days_since_last_watch: inactivity,
+        age: age,
+        customer_support_tickets: feedback,
+        completion_rate: shows,
+        premium_interest: premium,
+        platform_visits: subs
+    };
+    // -------- VALIDATION --------
+    if(
+        watch === 0 &&
+        lastweek === 0 &&
+        age === 0 &&
+        shows === 0
+    ){
+        alert("⚠️ Please enter valid user data before predicting!");
+        return;
+    }
+
+
+    fetch("/predict",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify(data)
+    })
+    .then(async res => {
+        if(!res.ok){
+            let err = await res.json();
+            alert("⚠️ " + (err.error || "Backend Validation Failed"));
+            throw new Error("Backend rejected request");
+        }
+        return res.json();
+    })
+
+    .then(result=>{
+
+        churn_risk.innerHTML = result.churn_risk==1?"❌ Yes":"✅ No";
+        churn_prob.innerHTML = result.churn_probability+"%";
+        purchase_prob.innerHTML = result.purchase_probability+"%";
+
+        let churnProb = Number(result.churn_probability);
+        // ---------- USER PERSONA ----------
+        let persona = "";
+        let personaBadge = document.getElementById("persona_type");
+
+        if(watch > 50 && churnProb < 40){
+            persona = "🌟 Loyal Binge Watcher";
+            personaBadge.className = "badge bg-success p-2 fs-6";
+        }
+        else if(churnProb >= 70){
+            persona = "⚠️ At Risk Customer";
+            personaBadge.className = "badge bg-danger p-2 fs-6";
+        }
+        else if(premium === 1 && result.purchase_probability >= 60){
+            persona = "💎 Premium Potential User";
+            personaBadge.className = "badge bg-warning text-dark p-2 fs-6";
+        }
+        else{
+            persona = "📺 Casual Viewer";
+            personaBadge.className = "badge bg-secondary p-2 fs-6";
+        }
+
+        personaBadge.innerHTML = persona;
+
+
+
+        // ---------- CLV + REVENUE IMPACT ----------
+        let clv = 0;
+
+        if(persona === "🌟 Loyal Binge Watcher") clv = 12000;
+        else if(persona === "💎 Premium Potential User") clv = 15000;
+        else if(persona === "⚠️ At Risk Customer") clv = 6000;
+        else clv = 4000;
+
+        let lossEstimation = (clv * (churnProb/100)).toFixed(0);
+
+        document.getElementById("clv_value").innerHTML = "₹" + clv;
+        document.getElementById("revenue_loss").innerHTML = "₹" + lossEstimation;
+
+        let priorityText="";
+
+        if(churnProb>=70){
+            risk_badge.innerHTML="🔴 HIGH RISK";
+            priorityText="🚨 Immediate Retention Needed";
+        }
+        else if(churnProb>=40){
+            risk_badge.innerHTML="🟡 Medium Risk";
+            priorityText="⚠️ Monitor User & Engage";
+        }
+        else{
+            risk_badge.innerHTML="🟢 Safe User";
+            priorityText="✅ No Urgent Action Needed";
+        }
+        // -------- SUCCESS TOAST --------
+        let toast = document.getElementById("toast");
+        toast.style.display = "block";
+        toast.style.opacity = "1";
+
+        setTimeout(()=>{
+            toast.style.opacity="0";
+        },1800);
+
+        setTimeout(()=>{
+            toast.style.display="none";
+        },2200);
+
+
+
+        priority_tag.innerHTML = priorityText;
+
+        let engagement = Math.max(10,Math.min(100,(watch*2)+(lastweek*2)-(inactivity*3)));
+        engagement_score.innerHTML = Math.round(engagement)+"/100";
+
+        let businessImpact = "";
+
+        if(churnProb >= 70 && clv >= 8000){
+            businessImpact = "🚨 CRITICAL — High Value User At Risk";
+        }
+        else if(churnProb >= 70){
+            businessImpact = "⚠️ HIGH — Must Retain This User";
+        }
+        else if(churnProb >= 40){
+            businessImpact = "⚡ MEDIUM — Watch & Engage";
+        }
+        else{
+            businessImpact = "🟢 LOW — Normal User";
+        }
+
+        document.getElementById("business_impact").innerHTML = businessImpact;
+
+
+        if(churnProb>=80) recommendation.innerHTML="🚨 Offer 50% Discount + Win-Back Campaign";
+        else if(churnProb>=60) recommendation.innerHTML="🔥 Trigger Retention Campaign + Personalized Offers";
+        else if(churnProb>=40) recommendation.innerHTML="📩 Send Engagement Notifications";
+        else recommendation.innerHTML="😊 User is Stable";
+
+        let reason="";
+        if(churnProb>=80) reason="User shows severe disengagement with high inactivity.";
+        else if(churnProb>=60) reason="User activity is dropping with dissatisfaction signals.";
+        else if(churnProb>=40) reason="User engagement unstable — warning exists.";
+        else reason="User engagement healthy — churn low.";
+
+        ai_reason.innerHTML = reason;
+
+        try{
+            if(churnChart) churnChart.destroy();
+            if(purchaseChart) purchaseChart.destroy();
+        }catch(e){}
+
+
+        churnChart = new Chart(document.getElementById("churnChart"),{
+            type:"doughnut",
+            data:{labels:["Churn","Safe"],datasets:[{data:[churnProb,100-churnProb],backgroundColor:["#ff4d4d","#4d88ff"]}]}
+        });
+
+        purchaseChart = new Chart(document.getElementById("purchaseChart"),{
+            type:"bar",
+            data:{labels:["Purchase Probability"],datasets:[{data:[result.purchase_probability],backgroundColor:["#4da6ff"]}]},
+            options:{scales:{y:{beginAtZero:true,max:100}}}
+        });
+
+        let row=document.querySelector("#historyTable tbody").insertRow();
+        row.insertCell(0).innerHTML=watch+" hrs user";
+        row.insertCell(1).innerHTML=result.churn_risk==1?"High ❌":"Low ✅";
+        row.insertCell(2).innerHTML=result.churn_probability+"%";
+        row.insertCell(3).innerHTML=result.purchase_probability+"%";
+        row.insertCell(4).innerHTML=priorityText;
+
+    })
+    .catch(()=>{
+        alert("Backend Not Running!");
+    });
+}
+toast.style.display = "block";
+toast.style.opacity = "1";
+
+setTimeout(()=>{
+    toast.style.opacity="0";
+},1800);
+
+setTimeout(()=>{
+    toast.style.display="none";
+},2200);
+
+
+</script>
+<div id="toast"
+style="
+position:fixed;
+bottom:25px;
+right:25px;
+background:linear-gradient(135deg,#1b2b72,#2d4cff);
+padding:15px 22px;
+border-radius:12px;
+border:1px solid rgba(255,255,255,0.3);
+color:white;
+display:none;
+font-weight:bold;
+box-shadow:0px 0px 20px rgba(0,0,0,0.6);
+transition:0.4s;">
+Prediction Generated Successfully 🎯
+</div>
+
+
+</body>
+</html>
+
